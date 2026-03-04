@@ -138,7 +138,7 @@ export function ScannerClient() {
     }
 
     return (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
             {/* Scanner Control Card */}
             <Card className="bg-white/5 backdrop-blur-xl border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col h-full">
                 <CardHeader>
@@ -180,7 +180,7 @@ export function ScannerClient() {
                 <CardContent className="flex-1 flex flex-col items-center justify-center p-6 relative">
 
                     {/* Scanner Viewport */}
-                    <div className="w-full max-w-sm aspect-square relative rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex items-center justify-center shadow-inner">
+                    <div className="w-full max-w-[280px] sm:max-w-sm aspect-square relative rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex items-center justify-center shadow-inner">
 
                         {/* Camera Element target */}
                         <div id="reader" className="w-full h-full absolute inset-0 [&>video]:object-cover [&>video]:w-full [&>video]:h-full" />
@@ -261,7 +261,7 @@ export function ScannerClient() {
                                     <Search className="w-10 h-10 opacity-50" />
                                 </div>
                                 <h3 className="text-lg font-medium text-foreground mb-1">Awaiting Scan</h3>
-                                <p className="text-sm max-w-[250px]">Scan a barcode to verify the product's authorization status in the database.</p>
+                                <p className="text-sm max-w-[250px]">Scan a barcode to verify.</p>
                             </motion.div>
                         ) : result ? (
                             <motion.div

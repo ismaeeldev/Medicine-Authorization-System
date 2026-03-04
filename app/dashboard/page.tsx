@@ -27,7 +27,7 @@ export default async function DashboardPage() {
                 </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {/* Stat Card */}
                 <Card className="bg-white/5 backdrop-blur-xl border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-primary/50 transition-colors duration-300">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
