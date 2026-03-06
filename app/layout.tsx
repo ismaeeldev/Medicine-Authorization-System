@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Topbar } from "@/components/layout/topbar"
 import { DeveloperWarning } from "@/components/DeveloperWarning"
+import { StartupLoader } from "@/components/startup-loader"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,8 +41,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex text-foreground bg-background`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex text-foreground bg-background selection:bg-primary/30 selection:text-primary`}
       >
+        <StartupLoader />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -51,15 +53,21 @@ export default function RootLayout({
           <Sidebar />
           <div className="flex-1 flex flex-col sm:ml-64 relative min-w-0">
             <Topbar />
-            <main className="flex-1 overflow-x-hidden pt-[4.5rem] sm:pt-4 md:pt-6 p-4 sm:p-6 md:p-8 pb-24 sm:pb-8 flex flex-col">
+            <main className="flex-1 overflow-x-hidden pt-16 sm:pt-0 p-4 sm:p-6 pb-24 sm:pb-6">
               {children}
             </main>
           </div>
-          <Toaster toastOptions={{
-            classNames: {
-              toast: "bg-background border-border text-foreground blur-xl bg-opacity-80 backdrop-blur-md rounded-xl",
-            }
-          }} />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              classNames: {
+                toast: "group toast group-[.toaster]:bg-neutral-900/80 group-[.toaster]:text-foreground group-[.toaster]:border-white/10 group-[.toaster]:shadow-[0_8px_30px_rgb(0,0,0,0.24)] group-[.toaster]:backdrop-blur-xl group-[.toaster]:rounded-2xl",
+                description: "group-[.toast]:text-muted-foreground",
+                actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground font-medium",
+                cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground font-medium",
+              }
+            }}
+          />
         </ThemeProvider>
       </body>
     </html>

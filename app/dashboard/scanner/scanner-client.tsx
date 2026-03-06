@@ -6,6 +6,8 @@ import { Camera, Image as ImageIcon, Loader2, CheckCircle2, XCircle, Search, Ref
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
 
+import { playSuccessSound, playErrorSound, playTapSound } from "@/lib/audio"
+
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -119,11 +121,14 @@ export function ScannerClient() {
             setResult({ ...data, serial })
 
             if (data.authorized) {
+                playSuccessSound()
                 toast.success(`Authorized: ${data.companyName}`)
             } else {
+                playErrorSound()
                 toast.error("Product not registered")
             }
         } catch (err) {
+            playErrorSound()
             toast.error("Verification failed due to network error.")
         } finally {
             setIsVerifying(false)
@@ -138,7 +143,7 @@ export function ScannerClient() {
     }
 
     return (
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
             {/* Scanner Control Card */}
             <Card className="bg-white/5 backdrop-blur-xl border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col h-full">
                 <CardHeader>
@@ -149,11 +154,12 @@ export function ScannerClient() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
+                                    playTapSound()
                                     setMode("camera")
                                     setResult(null)
                                     // It will wait for manual start to save resources
                                 }}
-                                className={mode === "camera" ? "bg-white/10 text-primary shadow-sm" : "text-muted-foreground"}
+                                className={mode === "camera" ? "bg-white/10 text-primary shadow-sm" : "hover:text-foreground text-muted-foreground transition-colors"}
                             >
                                 <Camera className="w-4 h-4 mr-2" /> Live
                             </Button>
@@ -161,11 +167,12 @@ export function ScannerClient() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
+                                    playTapSound()
                                     setMode("upload")
                                     stopScanner()
                                     setResult(null)
                                 }}
-                                className={mode === "upload" ? "bg-white/10 text-primary shadow-sm" : "text-muted-foreground"}
+                                className={mode === "upload" ? "bg-white/10 text-primary shadow-sm" : "hover:text-foreground text-muted-foreground transition-colors"}
                             >
                                 <ImageIcon className="w-4 h-4 mr-2" /> Upload
                             </Button>
@@ -180,7 +187,7 @@ export function ScannerClient() {
                 <CardContent className="flex-1 flex flex-col items-center justify-center p-6 relative">
 
                     {/* Scanner Viewport */}
-                    <div className="w-full max-w-[280px] sm:max-w-sm aspect-square relative rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex items-center justify-center shadow-inner">
+                    <div className="w-full max-w-sm aspect-square relative rounded-2xl overflow-hidden bg-black/40 border border-white/10 flex items-center justify-center shadow-inner">
 
                         {/* Camera Element target */}
                         <div id="reader" className="w-full h-full absolute inset-0 [&>video]:object-cover [&>video]:w-full [&>video]:h-full" />
@@ -227,12 +234,27 @@ export function ScannerClient() {
                             </div>
                         )}
 
-                        {/* Verifying Overlay */}
                         {isVerifying && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-background/80 backdrop-blur-md">
-                                <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
-                                <p className="text-lg font-medium animate-pulse text-foreground">Verifying serial...</p>
-                            </div>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 flex flex-col items-center justify-center z-20 bg-background/80 backdrop-blur-md"
+                            >
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                >
+                                    <Loader2 className="w-12 h-12 text-primary mb-4" />
+                                </motion.div>
+                                <motion.p
+                                    animate={{ opacity: [0.5, 1, 0.5] }}
+                                    transition={{ duration: 1.5, repeat: Infinity }}
+                                    className="text-lg font-medium text-foreground tracking-wide"
+                                >
+                                    Verifying serial...
+                                </motion.p>
+                            </motion.div>
                         )}
 
                     </div>
@@ -261,20 +283,26 @@ export function ScannerClient() {
                                     <Search className="w-10 h-10 opacity-50" />
                                 </div>
                                 <h3 className="text-lg font-medium text-foreground mb-1">Awaiting Scan</h3>
-                                <p className="text-sm max-w-[250px]">Scan a barcode to verify.</p>
+                                <p className="text-sm max-w-[250px]">Scan a barcode to verify the product's authorization status in the database.</p>
                             </motion.div>
                         ) : result ? (
                             <motion.div
                                 key="result"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 25 }}
                                 className="w-full flex flex-col items-center justify-center"
                             >
                                 {result.authorized ? (
                                     <div className="flex flex-col items-center w-full">
-                                        <div className="w-24 h-24 rounded-full bg-emerald-500/20 border-4 border-emerald-500/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
+                                            className="w-24 h-24 rounded-full bg-emerald-500/20 border-4 border-emerald-500/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)]"
+                                        >
                                             <CheckCircle2 className="w-12 h-12 text-emerald-500" />
-                                        </div>
+                                        </motion.div>
                                         <h3 className="text-2xl font-bold text-emerald-400 mb-1">Authorized</h3>
                                         <p className="text-sm text-foreground/80 mb-6 font-medium bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/20">
                                             Registered under: <span className="text-emerald-300 font-bold">{result.companyName}</span>
@@ -282,9 +310,14 @@ export function ScannerClient() {
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center w-full">
-                                        <div className="w-24 h-24 rounded-full bg-destructive/20 border-4 border-destructive/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
+                                            className="w-24 h-24 rounded-full bg-destructive/20 border-4 border-destructive/30 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)]"
+                                        >
                                             <XCircle className="w-12 h-12 text-destructive" />
-                                        </div>
+                                        </motion.div>
                                         <h3 className="text-2xl font-bold text-destructive mb-1">Not Registered</h3>
                                         <p className="text-sm text-muted-foreground mb-6">
                                             This product serial number could not be found in our authorized database.

@@ -21,7 +21,7 @@ export function Sidebar() {
                     <div className="bg-primary/20 p-1.5 rounded-lg border border-primary/30">
                         <ScanBarcode className="h-5 w-5 text-primary" />
                     </div>
-                    Medico<span className="text-foreground/80 font-medium">SaaS</span>
+                    Medico<span className="text-foreground/80 font-medium"></span>
                 </Link>
             </div>
             <nav className="flex flex-1 flex-col p-4 gap-2 overflow-y-auto">
